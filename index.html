@@ -1,28 +1,24 @@
-
 <iframe src="/" style="width:1000px;height:800px" id="lbox"></iframe>
 <textarea style="width:300px;height:800px" id="cmd">
 logout
 login
-
+setSleep 600
 #トップに戻って学習画面を開く
-click .logoimage
+goto /sys/index.php
 click .panel-study div
 
 #トップに戻って教材管理を開く
-click .logoimage
+goto /sys/index.php
 click .panel-manage-sco div
-
 click .fa-plus-circle
-click .context-menu-item
 
 #トップに戻ってメンバー管理を開く
-click .logoimage
+goto /sys/index.php
 click .panel-member div
 
 #トップに戻って成績管理を開く
-click .logoimage
+goto /sys/index.php
 click .panel-score div
-click .logoimage
 
 logout
 
@@ -37,20 +33,17 @@ clickContents ログイン
 
 #文字列の有無をチェック
 check メンバー管理
-
-#特定のURLに移動する
-goto /sys/index.php
-
-#JavaScirptを実行する
-exec alert(123)
-
 </textarea>
 <input type="button" value="実行" onclick="exec(0)">
 <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
   crossorigin="anonymous"></script>
 
 <script>
+  var sleep;
   function exec(i) {
+    if (i == 0) {
+      sleep = 500;
+    }
     cmdArray = $("#cmd").val().split("\n");
     var cmdLine = cmdArray[i];
     var cmdPartsArray = cmdLine.split(" ");
@@ -65,24 +58,25 @@ exec alert(123)
       $("input[name=userName]", lbox.contentWindow.document).val("tatsuno-admin");
       $("input[name=password]", lbox.contentWindow.document).val("Mori4ta");
       $("#headerLogin", lbox.contentWindow.document).click();
-    }
-    if (op == "logout") {
+    } else if (op == "logout") {
       lbox.contentWindow.document.location = '/?action=logout';
-    }
-    if (op == "click") {
+    } else if (op == "setSleep") {
+      sleep = parseInt(target);
+    } else if (op == "click") {
       if ($(target, lbox.contentWindow.document).length == 0) {
         console.error(target + " not found");
       }
       $(target, lbox.contentWindow.document).click();
-    }
-    if (op == "exec") {
+    } else if (op == "goto") {
+      lbox.contentWindow.document.location.href = target
+    } else if (op == "exec") {
       eval(target);
     }
     if (op != "end") {
       if (i + 1 < cmdArray.length) {
         setTimeout(function () {
           exec(i + 1);
-        }, 500)
+        }, sleep)
       }
     }
   }
